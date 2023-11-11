@@ -43,7 +43,7 @@ block AirportsDataTableInterpreter oftype TableInterpreter{
  // Loader Block: Model data into sqlite
 block AirportsDataDBLoader oftype SQLiteLoader {
     table: "airports";
-    file: "../data/airports.sqlite";
+    file: "./airports.sqlite";
 }
 
 
