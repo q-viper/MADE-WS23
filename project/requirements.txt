@@ -1,2 +1,3 @@
 kaggle
-emoji
+demoji
+sqlalchemy

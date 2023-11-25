@@ -1,27 +1,27 @@
 import pandas as pd
-import numpy as np
 import os
-from configs import Config, DataSource, DataType
 from pathlib import Path
 from typing import Union
-import re, emoji
+import re, demoji
+
+from .configs import Config, DataSource, DataType
 
 
 class DataHandler:
     def __init__(self, config: Config):
         self.config = config
 
-    def __read_csv(self, path: Union[str, Path]):
-        df = pd.read_csv(path)
+    def __read_csv(self, path: Union[str, Path]) -> pd.DataFrame:
+        df = pd.read_csv(path, sep=self.config.csv_sep)
         return df
 
-    def __load_data(self, path: Union[str, Path]):
+    def __load_data(self, path: Union[str, Path]) -> pd.DataFrame:
         if self.config.data_type == DataType.CSV:
             return self.__read_csv(path)
         else:
             raise NotImplementedError(f"Not implemented for {self.config.data_type}")
 
-    def load_data(self):
+    def load_data(self) -> "DataHandler":
         if self.config.data_source == DataSource.LOCAL:
             self.data = self.__load_data(
                 self.config.local_data_path / self.config.data_file_name
@@ -55,13 +55,36 @@ class DataHandler:
             raise NotImplementedError(f"Not implemented for {self.config.data_source}")
         return self
 
-    def __clean_text(self, text: str):
+    def drop_columns(self, columns: list) -> "DataHandler":
+        self.data = self.data.drop(columns=columns)
+        return self
+
+    def drop_rows(self, keep_condition: Union[str, callable]) -> "DataHandler":
+        if isinstance(keep_condition, str):
+            self.data = self.data.query(keep_condition)
+        else:
+            self.data = self.data[self.data.apply(keep_condition, axis=1)]
+        return self
+
+    def apply(
+        self, column: str, func: callable, new_column: str = None
+    ) -> "DataHandler":
+        if new_column is not None:
+            self.data[new_column] = self.data[column].apply(func)
+        else:
+            self.data[column] = self.data[column].apply(func)
+        return self
+
+    def __clean_text(self, text: str) -> str:
         text = re.sub(r"http\S+", "", text)  # remove links
         text = re.sub(r"@\S+", "", text)  # remove mentions
-        text = emoji.get_emoji_regexp().sub("", text)  # remove emojis
+        text = re.sub(r"#\S+", "", text)  # remove hashtags
+        text = re.sub(r"RT", "", text)  # remove retweets
+
+        text = demoji.replace(text, "")  # remove emojis
         return text
 
-    def clean_data(self):
+    def clean_data(self) -> "DataHandler":
         if self.config.focus_columns:
             self.data = self.data[self.config.focus_columns]
         if self.config.drop_duplicates:
@@ -95,8 +118,7 @@ class DataHandler:
 
 if __name__ == "__main__":
     config = Config(data_source=DataSource.LOCAL)
-    tweet_data = DataHandler(config)
-    tweet_data.load_data()
+    tweet_data = DataHandler(config).load_data().clean_data()
     print(tweet_data.data.head())
 
     covid_cols = [
@@ -120,6 +142,5 @@ if __name__ == "__main__":
         focus_columns=covid_cols,
         filter_date=True,
     )
-    covid_data = DataHandler(config)
-    covid_data.load_data()
+    covid_data = DataHandler(config).load_data().clean_data()
     print(covid_data.data.head())

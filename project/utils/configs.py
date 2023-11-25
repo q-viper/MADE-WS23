@@ -16,7 +16,9 @@ class DataType(Enum):
 
 @dataclass
 class Config:
-    credentials_path: Path = Path(__file__).parent.parent / "kaggle.json"
+    credentials_path: Path = (
+        Path(__file__).parent.parent / "kaggle.json"
+    )  # should be as: project/kaggle.json
     data_source: DataSource = DataSource.LOCAL
     local_data_path: Path = Path(__file__).parent.parent.parent / "data/"
     remote_data_path: Optional[
@@ -26,6 +28,7 @@ class Config:
     data_file_name: str = "covid19_tweets.csv"
     data_type: DataType = DataType.CSV
     kaggle_dataset_name: str = "gpreda/covid19-tweets"
+    csv_sep: str = ","
 
     # for covid19_tweets.csv:
     # iso_code,continent,location,date,total_cases,new_cases,new_deaths,total_deaths,new_vaccinations,total_vaccinations
