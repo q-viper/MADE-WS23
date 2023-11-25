@@ -46,7 +46,7 @@ data = (
     )
 )
 
-engine = create_engine("sqlite:///./data/trainstops.db", echo=True)
+engine = create_engine("sqlite:///./data/trainstops.sqlite", echo=True)
 data.data.to_sql("trainstops", con=engine, if_exists="replace")
 print("Done.")
 
