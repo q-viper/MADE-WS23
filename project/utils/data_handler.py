@@ -2,9 +2,8 @@ import pandas as pd
 import os
 from pathlib import Path
 from typing import Union
-import re, demoji
-
-from .configs import Config, DataSource, DataType
+import re
+from .configs import Config, DataSource, DataType, EMOJI_PATTERN
 
 
 class DataHandler:
@@ -81,7 +80,7 @@ class DataHandler:
         text = re.sub(r"#\S+", "", text)  # remove hashtags
         text = re.sub(r"RT", "", text)  # remove retweets
 
-        text = demoji.replace(text, "")  # remove emojis
+        text = re.sub(EMOJI_PATTERN, "", text)  # remove emojis
         return text
 
     def clean_data(self) -> "DataHandler":
@@ -94,6 +93,7 @@ class DataHandler:
         if self.config.clean_text_column:
             for col in self.config.clean_text_column:
                 self.data[col] = self.data[col].apply(self.__clean_text)
+
         if self.config.filter_date:
             if self.config.date_column in self.data.columns:
                 self.data[self.config.date_column] = pd.to_datetime(
