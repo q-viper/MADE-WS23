@@ -32,6 +32,21 @@ def valid_ioft(row: pd.Series) -> bool:
         )
 
 
+def is_not_empty(row: pd.Series) -> bool:
+    return not (
+        row["Verkehr"] == ""
+        or row["EVA_NR"] == ""
+        or row["DS100"] == ""
+        or row["NAME"] == ""
+        or row["Verkehr"] == ""
+        or row["Laenge"] == ""
+        or row["Breite"] == ""
+        or row["Betreiber_Name"] == ""
+        or row["Betreiber_Nr"] == ""
+        or row.isna().sum() != 0
+    )
+
+
 data = (
     DataHandler(config)
     .load_data()
@@ -41,12 +56,10 @@ data = (
     .apply("Laenge", lambda x: float(x.replace(",", ".")))
     .drop_rows(keep_condition="-90<Laenge and Laenge<90 and -90<Breite and Breite<90")
     .drop_rows(keep_condition=valid_ioft)
-    .drop_rows(
-        keep_condition="Verkehr != '' and EVA_NR !='' and DS100 != '' and NAME != '' and Verkehr != '' and Laenge != '' and Breite != '' and Betreiber_Name != '' and Betreiber_Nr != ''"
-    )
+    .drop_rows(keep_condition=is_not_empty)
 )
 
-engine = create_engine("sqlite:///trainstops.sqlite", echo=True)
+engine = create_engine("sqlite:///./data/trainstops.sqlite", echo=True)
 data.data.to_sql("trainstops", con=engine, if_exists="replace")
 print("Done.")
 
