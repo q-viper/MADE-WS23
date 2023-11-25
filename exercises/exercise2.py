@@ -58,8 +58,8 @@ data = (
     .drop_rows(keep_condition=valid_ioft)
     .drop_rows(keep_condition=is_not_empty)
 )
-
-engine = create_engine("sqlite:///./data/trainstops.sqlite", echo=True)
+# sqlite:///./data/trainstops.sqlite
+engine = create_engine("sqlite:///trainstops.sqlite", echo=True)
 data.data.to_sql("trainstops", con=engine, if_exists="replace")
 print("Done.")
 
