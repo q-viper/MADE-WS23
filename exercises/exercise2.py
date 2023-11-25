@@ -2,6 +2,7 @@ import sys
 import os
 import pandas as pd
 from sqlalchemy import create_engine
+import sqlalchemy
 
 sys.path.append(os.getcwd())
 from project.utils.data_handler import DataHandler
@@ -60,7 +61,23 @@ data = (
 )
 # sqlite:///./data/trainstops.sqlite
 engine = create_engine("sqlite:///trainstops.sqlite", echo=True)
-data.data.to_sql("trainstops", con=engine, if_exists="replace")
+data.data.to_sql(
+    "trainstops",
+    con=engine,
+    if_exists="replace",
+    index=False,
+    dtype={
+        "EVA_NR": sqlalchemy.BIGINT,
+        "DS100": sqlalchemy.TEXT,
+        "IFOPT": sqlalchemy.TEXT,
+        "NAME": sqlalchemy.TEXT,
+        "Verkehr": sqlalchemy.TEXT,
+        "Laenge": sqlalchemy.FLOAT,
+        "Breite": sqlalchemy.FLOAT,
+        "Betreiber_Name": sqlalchemy.TEXT,
+        "Betreiber_Nr": sqlalchemy.BIGINT,
+    },
+)
 print("Done.")
 
 print(data.data.head())
