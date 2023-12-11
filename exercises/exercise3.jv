@@ -1,0 +1,86 @@
+pipeline CarsDataPipeline{
+     
+    //getting data from url
+    block CarsDataExtractor oftype HttpExtractor{	
+        	url: "https://www-genesis.destatis.de/genesis/downloads/00/tables/46251-0021_00.csv";
+    }	
+    // interpreting the file
+    block CarsDataTextFileInterpreter oftype TextFileInterpreter{
+    // applying encoding to the file 
+encoding: "latin6"; 
+    }
+    //converting to csv
+    block CarsDataCSVFileInterpreter oftype CSVInterpreter{
+        delimiter: ";";
+    }
+    //deleting columns
+   block CarsColumnDeleter oftype ColumnDeleter {
+        delete: [column D, column E, column F, column G, column H, column I, column J, column K, column L, column N,
+                 column O, column P, column Q, column R, column S, column T, column U, column V, column X, column Y, column Z, column AM,
+                 column AZ, column AB, column AS, column AU, column AT, column AH,column AI, column AJ, column AK, column AL, column AA, column AN, 
+                 column AO, column AR, column AD, column AF, column AE, column AX, column AW, column AV, column AY, column AC, column BM, column BO,
+                 column BD, column BE, column BF, column BG, column BH, column BI, column BJ, column BK, column BL, column BB, column BN, column BC,
+                 column BP, column BQ, column BR, column BS, column BT];
+    }
+    //converting data to table
+    block CarsDataTableInterpreter oftype TableInterpreter{
+        header:false;
+        columns: [
+            "date" oftype text,
+            "CIN" oftype CINLength,
+            "name" oftype text,
+            "petrol" oftype positiveNumber,
+            "diesel" oftype positiveNumber,
+            "gas" oftype positiveNumber,
+            "electro" oftype positiveNumber,
+            "hybrid" oftype positiveNumber,
+            "plugInHybrid" oftype positiveNumber,
+            "others" oftype positiveNumber
+
+		];
+    }
+    //generating sqlite file from table
+
+    block CarsDataSQLiteInterpreter oftype SQLiteLoader {
+		 table: "cars";
+         file: "cars.sqlite";
+	}
+   
+    constraint maxminFive oftype RegexConstraint {
+  regex: /^.{5}$/;
+  }
+    
+    valuetype CINLength oftype text {
+        constraints: [maxminFive];
+    }
+      constraint positiveNumberConst oftype RangeConstraint {
+        lowerBound: 0;
+    }
+
+    valuetype positiveNumber oftype integer {
+        constraints: [positiveNumberConst];
+    }
+    //pipes
+    pipe {
+        from: CarsDataExtractor;
+        to: CarsDataTextFileInterpreter;
+    }
+    pipe {
+        from: CarsDataTextFileInterpreter;
+        to: CarsDataCSVFileInterpreter;
+    }
+    pipe {
+        from: CarsDataCSVFileInterpreter;
+        to: CarsColumnDeleter;
+    }
+ 
+    pipe {
+        from: CarsColumnDeleter;
+        to: CarsDataTableInterpreter;
+    }
+ 
+    pipe {
+        from: CarsDataTableInterpreter;
+        to: CarsDataSQLiteInterpreter;
+    }
+}
