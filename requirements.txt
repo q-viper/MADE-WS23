@@ -3,3 +3,4 @@ kaggle==1.5.16
 pandas==2.0.3
 pytest
 SQLAlchemy==2.0.23
+seaborn
