@@ -52,7 +52,9 @@ class DataHandler:
                 self.config.kaggle_dataset_name,
                 path=self.config.local_data_path,
                 unzip=True,
+                quiet=False,
             )
+            print(f"Downloaded data from Kaggle. Path: {self.config.local_data_path}")
             self.data = self.__load_data(
                 self.config.local_data_path / self.config.data_file_name
             )
