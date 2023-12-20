@@ -3,7 +3,11 @@ import os
 from pathlib import Path
 from typing import Union
 import re
-from .configs import Config, DataSource, DataType, EMOJI_PATTERN
+import sys
+
+sys.path.append(os.getcwd())
+
+from project.utils.configs import Config, DataSource, DataType, EMOJI_PATTERN
 
 
 class DataHandler:
@@ -84,6 +88,7 @@ class DataHandler:
         return text
 
     def clean_data(self) -> "DataHandler":
+        print("Cleaning data...")
         if self.config.focus_columns:
             self.data = self.data[self.config.focus_columns]
         if self.config.drop_duplicates:
@@ -95,24 +100,25 @@ class DataHandler:
                 self.data[col] = self.data[col].apply(self.__clean_text)
 
         if self.config.filter_date:
-            if self.config.date_column in self.data.columns:
-                self.data[self.config.date_column] = pd.to_datetime(
-                    self.data[self.config.date_column]
+            data = self.data.copy()
+            if self.config.date_column in data.columns:
+                data[self.config.date_column] = pd.to_datetime(
+                    data[self.config.date_column]
                 )
-                pass
             else:
                 raise ValueError("Date column not match.")
             if self.config.min_date:
-                self.data = self.data[
-                    self.data[self.config.date_column]
+                data = data[
+                    data[self.config.date_column]
                     >= pd.to_datetime(self.config.min_date)
                 ]
             if self.config.max_date:
-                self.data = self.data[
-                    self.data[self.config.date_column]
+                data = data[
+                    data[self.config.date_column]
                     <= pd.to_datetime(self.config.max_date)
                 ]
-
+            self.data = data
+        print("Done.")
         return self
 
 

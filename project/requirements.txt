@@ -1,3 +1,6 @@
-kaggle
-demoji
-sqlalchemy
+sqlalchemy==1.4.46
+demoji==1.1.0
+kaggle==1.5.16
+pandas==2.0.3
+pytest==7.4.3
+SQLAlchemy==2.0.23

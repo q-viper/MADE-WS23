@@ -4,3 +4,4 @@
 venv/
 pycache/
 kaggle.json
+__pycache__/
