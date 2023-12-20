@@ -16,9 +16,9 @@ def test_pipeline():
     tweet_db = config.local_data_path / "tweet.db"
 
     if not os.path.exists(covid_db):
-        raise Exception("COVID Database not found")
+        raise Exception(f"COVID Database not found at {covid_db}")
     if not os.path.exists(tweet_db):
-        raise Exception("Tweet Database not found")
+        raise Exception(f"Tweet Database not found at {tweet_db}")
 
     engine1 = create_engine(f"sqlite:///{str(covid_db)}", echo=True)
     engine2 = create_engine(f"sqlite:///{str(tweet_db)}", echo=True)
