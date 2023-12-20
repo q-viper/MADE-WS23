@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Union
 import re
 import sys
-from dotenv import load_dotenv
 
 sys.path.append(os.getcwd())
 
