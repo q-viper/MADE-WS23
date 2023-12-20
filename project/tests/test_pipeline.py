@@ -7,8 +7,8 @@ import os
 
 
 def test_pipeline():
-    # pipeline = Pipeline()
-    # pipeline.run()
+    pipeline = Pipeline()
+    pipeline.run()
     config = Config()
 
     print("Checkin DB Files...")
