@@ -21,7 +21,7 @@ jobs:
         KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
       if: ${{ env.KAGGLE_KEY == '' }}
       run: 'echo "echo KAGGLE_KEY is missing. Go to \"Settings \> Environments \" to create it."'
-      
+
     - name: Checkout
       uses: actions/checkout@v3
 
@@ -34,6 +34,17 @@ jobs:
     # pip install
     - name: Install packages
       run: pip install -r requirements.txt
+    
+    - name: Kaggle auth
+      shell: bash
+      run: |
+        echo '{
+          "username": "${{ secrets.KAGGLE_USERNAME }}",
+          "key": "${{ secrets.KAGGLE_KEY }}"
+        }' > kaggle.json
+        mv kaggle.json ~/project/
+        chmod 600 ~/project/kaggle.json
+        echo "Login to Kaggle successful"
 
     # Run exercise feedback
     - name: Make test runnable
