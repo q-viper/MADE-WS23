@@ -9,17 +9,18 @@ on:
 jobs:
   project-feedback:
     runs-on: ubuntu-latest
-    steps:
     - name: "Kaggle Username Check"
       env: 
-        KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME }}
+        KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
       if: ${{ env.KAGGLE_USERNAME == '' }}
       run: 'echo "echo KAGGLE_USERNAME is missing. Go to \"Settings \> Environments \" to create it."'
     - name: "Check Kaggle Key"
       env:
-        KAGGLE_KEY: ${{ vars.KAGGLE_KEY }}
+        KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
       if: ${{ env.KAGGLE_KEY == '' }}
       run: 'echo "echo KAGGLE_KEY is missing. Go to \"Settings \> Environments \" to create it."'
+    steps:
+    
     - name: Checkout
       uses: actions/checkout@v3
 
