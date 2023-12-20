@@ -14,7 +14,7 @@ class Pipeline:
         # print(f"Local data path: {local_data_path}")
 
         config = Config(
-            data_source=DataSource.LOCAL,
+            data_source=DataSource.KAGGLE,
             # local_data_path=local_data_path,
             clean_text_column=["text"],
         )
@@ -38,7 +38,7 @@ class Pipeline:
             "hosp_patients",
         ]
         config = Config(
-            data_source=DataSource.LOCAL,
+            data_source=DataSource.REMOTE,
             # local_data_path=local_data_path,
             data_file_name="owid-covid-data.csv",
             focus_columns=covid_cols,
