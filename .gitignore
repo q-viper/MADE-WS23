@@ -6,3 +6,5 @@ pycache/
 kaggle.json
 .pytest_cache/
 __pycache__/
+*.sqlite
+*.env

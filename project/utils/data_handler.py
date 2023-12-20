@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Union
 import re
 import sys
+from dotenv import load_dotenv
 
 sys.path.append(os.getcwd())
 
@@ -38,10 +39,12 @@ class DataHandler:
         elif self.config.data_source == DataSource.KAGGLE:
             import json
 
-            with open(self.config.credentials_path) as f:
-                kaggle_auth = json.load(f)
-                os.environ["KAGGLE_USERNAME"] = kaggle_auth["username"]
-                os.environ["KAGGLE_KEY"] = kaggle_auth["key"]
+            # only check if env variables are set if kaggle.json does not exist
+            if os.getenv("KAGGLE_USERNAME") is None or os.getenv("KAGGLE_KEY") is None:
+                with open(self.config.credentials_path) as f:
+                    kaggle_auth = json.load(f)
+                    os.environ["KAGGLE_USERNAME"] = kaggle_auth["username"]
+                    os.environ["KAGGLE_KEY"] = kaggle_auth["key"]
 
             import kaggle
 

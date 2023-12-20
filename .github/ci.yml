@@ -1,0 +1,38 @@
+name: Project Testing
+run-name: ${{ github.actor }} is testing his project....
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  project-feedback:
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Kaggle Username Check"
+      env: 
+        KAGGLE_USERNAME: ${{ vars.KAGGLE_USERNAME }}
+      if: ${{ env.KAGGLE_USERNAME == '' }}
+      run: 'echo "echo KAGGLE_USERNAME is missing. Go to \"Settings \> Environments \" to create it."'
+    - name: "Check Kaggle Key"
+      env:
+        KAGGLE_KEY: ${{ vars.KAGGLE_KEY }}
+      if: ${{ env.KAGGLE_KEY == '' }}
+      run: 'echo "echo KAGGLE_KEY is missing. Go to \"Settings \> Environments \" to create it."'
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Install python
+    - name: Set up Python 3.8.5
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.8.5
+    
+    # pip install
+    - name: Install packages
+      run: pip install -r requirements.txt
+
+    # Run exercise feedback
+    - name: Run Project tests
+      run: chmod +x ./project/tests.sh
