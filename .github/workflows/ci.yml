@@ -42,13 +42,13 @@ jobs:
           "username": "${{ secrets.KAGGLE_USERNAME }}",
           "key": "${{ secrets.KAGGLE_KEY }}"
         }' > kaggle.json
-        mv kaggle.json ~/project/
-        chmod 600 ~/project/kaggle.json
+        mv kaggle.json /home/runner/work/MADE-WS23/MADE-WS23/project
+        chmod 600 /home/runner/work/MADE-WS23/MADE-WS23/project/kaggle.json
         echo "Login to Kaggle successful"
 
     # Run exercise feedback
     - name: Make test runnable
-      run: chmod +x ./project/tests.sh
+      run: chmod +x /home/runner/work/MADE-WS23/MADE-WS23/project/tests.sh
     - name: Run tests
       run: |
-        ./project/tests.sh
+        /home/runner/work/MADE-WS23/MADE-WS23/project/tests.sh
