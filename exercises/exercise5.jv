@@ -1,0 +1,69 @@
+
+
+pipeline StopsPipeline {
+    block DataExtractor oftype HttpExtractor {
+        url: "https://gtfs.rhoenenergie-bus.de/GTFS.zip"; 
+    }
+
+    block ArchiveInterpreter oftype ArchiveInterpreter {
+        archiveType: "zip"; 
+    }
+
+    block FilePicker oftype FilePicker {
+        path: "/stops.txt"; 
+    }
+
+    block TextFileInterpreter oftype TextFileInterpreter {
+    }
+
+    block CSVInterpreter oftype CSVInterpreter {
+        enclosing: '"';
+        enclosingEscape: '"'; 
+    }
+
+    // Block for interpreting the CSV data as a table
+    block TableInterpreter oftype TableInterpreter {
+        header: true; 
+        columns: [
+            "stop_id" oftype integer, 
+            "stop_name" oftype text, 
+            "stop_lat" oftype Coordinates, 
+            "stop_lon" oftype Coordinates, 
+            "zone_id" oftype ZoneNumberValidator 
+        ];
+    }
+    
+    valuetype ZoneNumberValidator oftype integer {
+        constraints: [
+            Year 
+        ];
+    }
+        constraint Year oftype RangeConstraint {
+        lowerBound: 2001; 
+        upperBound: 2001; 
+    }
+
+        valuetype Coordinates oftype decimal {
+        constraints: [
+            GeographicConstraints 
+        ];
+    }
+
+    constraint GeographicConstraints oftype RangeConstraint {
+        lowerBound: -90; 
+        upperBound: 90; 
+    }
+
+    block DataLoader oftype SQLiteLoader {
+        table: "stops"; 
+        file: "./gtfs.sqlite"; 
+    }
+
+    DataExtractor 
+        -> ArchiveInterpreter
+        -> FilePicker
+        -> TextFileInterpreter
+        -> CSVInterpreter
+        -> TableInterpreter
+        -> DataLoader; 
+}
